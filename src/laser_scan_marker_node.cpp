@@ -36,22 +36,14 @@ private:
         printf("size of ranges: %d\n", scan_msg->ranges.size());
 
         for (size_t i = 0; i < scan_msg->ranges.size(); ++i) {
-            if (std::isinf(scan_msg->ranges[i] )) {
-                // do nothing
-            } else {
+            if (!std::isinf(scan_msg->ranges[i] )){
                 // Convert polar coordinates to Cartesian for each point
                 double angle = scan_msg->angle_min + i * scan_msg->angle_increment;
                 double angle_deg = angle*180/(22/7);
                 if (angle_deg < 47.0 && angle_deg > -47.0) {
-                    // geometry_msgs::msg::Point point;
-                    // point.x = scan_msg->ranges[i] * std::cos(angle);
-                    // point.y = scan_msg->ranges[i] * std::sin(angle);
-                    // point.z = 0.0; // Assuming a 2D laser scan
                     printf("range: %f angle: %f index: %d\n", scan_msg->ranges[i], angle_deg, i);
 
                     if (scan_msg->ranges[i] < threshold_distance ){
-                        // printf("Object detected in range: %f\n", scan_msg->ranges[i] );
-                        // object_detected = true;
                         flag.data = true;
                         if (angle_deg < 0.0) {
                             vel_dir_.data = "left";
@@ -61,24 +53,13 @@ private:
                             vel_dir_.data = "right";
                             vel_dir_pub->publish(vel_dir_);
                         }
-                        // object_detected_->publish(flag);
                         break;
                     }
                 }
-                // marker.points.push_back(point);
             }
         }
 
-        // if (object_detected) {
         object_detected_->publish(flag);
-        // } else {
-        //     object_detected_->publish(flag);
-        // }
-        // if (object_detected != flag.data){
-        //     flag.data = object_detected;
-        //     object_detected_->publish(flag);
-        // }
-        printf("***********************************\n");
 
     }
 
